@@ -8,7 +8,8 @@ from blincodes.codes import rm as rm_code
 from attacker import Attacker
 
 
-logger = logging.getLogger(__name__)
+# 'CB' stands for Chizhov-Borodin
+logger = logging.getLogger('CB')
 lc.fileConfig(fname='logging.conf')
 
 
@@ -16,14 +17,13 @@ class ChizhovBorodin(Attacker):
 
     def __init__(self, r, m):
 
-        logger.info('info message')
-        logger.debug('debug message')
         self.r = r
         self.m = m
         self.generate_keys()
 
     def generate_keys(self):
 
+        logger.info('generating pair of keys...')
         G = rm_code.generator(self.r, self.m)
         M = matrix.nonsingular(G.nrows)
         permutation = list(range(G.ncolumns))
@@ -32,6 +32,7 @@ class ChizhovBorodin(Attacker):
         
         self.private_key = (M, G, P)
         self.public_key = (M * G * P)
+        logger.debug(self.stringify_matrix('Public Key', self.public_key))
 
     def attack(self):
         pass
