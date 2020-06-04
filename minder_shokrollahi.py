@@ -4,6 +4,8 @@ import math
 
 from blincodes import matrix
 from blincodes.codes import tools
+import networkx as nx
+from networkx.algorithms.approximation import clique
 
 from attacker import Attacker
 
@@ -29,7 +31,37 @@ class MinderShokrollahi(Attacker):
                 return vec.support
 
     def _get_cliques(self, G):
-        return
+        
+        r = self.r
+        m = self.m
+
+        desired_clique_size = 2**(m - r)
+        desired_number_of_cliques = 2**r - 1
+        result_cliques = []
+
+        while True:
+
+            max_cliques = nx.find_cliques(G)
+            exit_with_empty = True
+
+            for clique in max_cliques:
+                if len(clique) >= desired_clique_size:
+                    if not len(clique) % desired_clique_size:
+
+                        for i in range(int(len(clique) / desired_clique_size)):
+                            from_  = i*desired_clique_size
+                            result_cliques \
+                                .append(clique[from_:from_+desired_clique_size])
+
+                        G.remove_nodes_from(clique)
+                        exit_with_empty = False
+                        break
+
+            if exit_with_empty:
+                return []
+
+            if len(result_cliques) == desired_number_of_cliques:
+                return result_cliques
 
     def _decompose_inner_sets(self, pub_key):
         
