@@ -6,6 +6,7 @@ from blincodes import matrix
 from blincodes.codes import tools
 import networkx as nx
 from networkx.algorithms.approximation import clique
+from scipy.special import binom
 
 from attacker import Attacker
 
@@ -31,7 +32,7 @@ class MinderShokrollahi(Attacker):
                 return vec.support
 
     def _get_cliques(self, G):
-        
+
         r = self.r
         m = self.m
 
@@ -58,9 +59,11 @@ class MinderShokrollahi(Attacker):
                         break
 
             if exit_with_empty:
+                logger.debug('return on flag')
                 return []
 
             if len(result_cliques) == desired_number_of_cliques:
+                logger.debug('return on length equality')
                 return result_cliques
 
     def _decompose_inner_sets(self, pub_key):
@@ -79,7 +82,8 @@ class MinderShokrollahi(Attacker):
 
                 codewords_supports.append(vec.support)
 
-        word_len = 2**m 
+        word_len = 2**m
+        logger.debug(f'word length is {word_len}')
         G = nx.Graph()
         G.add_nodes_from(range(word_len))
 
@@ -115,6 +119,8 @@ class MinderShokrollahi(Attacker):
         
         B = matrix.Matrix()
         B_size = 0
+        for i in range(self.r):
+            B_size += binom(self.m, i)
 
         codeword_support_list = []
         while B.nrows < B_size: 
