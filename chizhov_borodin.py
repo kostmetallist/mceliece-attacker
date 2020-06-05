@@ -15,6 +15,18 @@ lc.fileConfig(fname='logging.conf')
 
 class ChizhovBorodin(Attacker):
 
+    @staticmethod
+    def gcd_step(r, m, rm):
+        return
+
+    @staticmethod
+    def find_permutation(rm, m):
+        return
+
+    @staticmethod
+    def find_nonsingular(pubkey, rm):
+        return
+
     def __init__(self, r, m):
 
         self.r = r
@@ -44,4 +56,18 @@ class ChizhovBorodin(Attacker):
             r = self.m - 1 - r 
             rm = rm.orthogonal
 
-        rm_minus_1 = MinderShokrollahi(d, self.m).attack(rm)
+        d, rm = self.gcd_step(r, self.m, rm)
+        if d != 1:
+            logger.info('performing Minder-Shokrollahi attack...')
+            rm_minus_1 = MinderShokrollahi(d, self.m).attack(rm)
+
+        elif:
+            logger.info("skipping Minder-Shokrollahi step...")
+
+        self.logger.debug("solving P and M matrices...")
+        P = self.find_permutation(rm, self.m)
+
+        permuted_rm = rm_code.generator(r, self.m) * P
+        M = self.find_nonsingular(self.public_key, permuted_rm)
+        
+        return M, P

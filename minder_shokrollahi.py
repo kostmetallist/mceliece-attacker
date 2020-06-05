@@ -36,8 +36,8 @@ class MinderShokrollahi(Attacker):
         r = self.r
         m = self.m
 
-        desired_clique_size = 2**(m - r)
-        desired_number_of_cliques = 2**r - 1
+        target_clique_size = 2**(m - r)
+        target_number_of_cliques = 2**r - 1
         result_cliques = []
 
         while True:
@@ -46,13 +46,13 @@ class MinderShokrollahi(Attacker):
             exit_with_empty = True
 
             for clique in max_cliques:
-                if len(clique) >= desired_clique_size:
-                    if not len(clique) % desired_clique_size:
+                if len(clique) >= target_clique_size:
+                    if not len(clique) % target_clique_size:
 
-                        for i in range(int(len(clique) / desired_clique_size)):
-                            from_  = i*desired_clique_size
+                        for i in range(int(len(clique) / target_clique_size)):
+                            from_  = i*target_clique_size
                             result_cliques \
-                                .append(clique[from_:from_+desired_clique_size])
+                                .append(clique[from_:from_+target_clique_size])
 
                         G.remove_nodes_from(clique)
                         exit_with_empty = False
@@ -62,7 +62,7 @@ class MinderShokrollahi(Attacker):
                 logger.debug('return on flag')
                 return []
 
-            if len(result_cliques) == desired_number_of_cliques:
+            if len(result_cliques) == target_number_of_cliques:
                 logger.debug('return on length equality')
                 return result_cliques
 
@@ -88,7 +88,6 @@ class MinderShokrollahi(Attacker):
         G.add_nodes_from(range(word_len))
 
         cij = [[0 for x in range(word_len)] for y in range(word_len)]
-
         for i in range(word_len):
             for j in range(i + 1, word_len):
                 word_num = 0
@@ -98,12 +97,7 @@ class MinderShokrollahi(Attacker):
 
                     word_num += 1
 
-        cij_values = set()
-        for i in range(word_len):
-            for j in range(i + 1, word_len):
-                cij_values.add(cij[i][j])
-
-        c = max(cij_values)
+        c = max({item for i in range(word_len) for j in range(i + 1, word_len)})
         logger.debug(f'threshold c is set to {c}')
 
         for i in range(word_len):
