@@ -2,7 +2,7 @@ import logging
 from logging import config as lc
 import math
 
-from blincodes import matrix, vector
+from blincodes import matrix as mx, vector
 
 
 logger = logging.getLogger('UT')
@@ -12,7 +12,7 @@ lc.fileConfig(fname='logging.conf')
 def dot_product(matrix1, matrix2):
 
     rows = [row1 & row2 for row1 in matrix1 for row2 in matrix2]
-    new_pub = matrix.from_vectors([row for row in matrix.from_vectors(rows)
+    new_pub = mx.from_vectors([row for row in mx.from_vectors(rows)
                                       .gaussian_elimination()
                                    if len(row.support)])
     return new_pub
@@ -63,7 +63,7 @@ def dottify(matrix, x, y):
     return dot_product(rm_dm, rm_s) if s else rm_dm
 
 
-def gcd_step(r, m, matrix):
+def gcd_step(matrix, r, m):
 
     g, x, y = xgcd(m - 1, r)
     if x == 0 and y == 1:
@@ -82,12 +82,12 @@ def gcd_step(r, m, matrix):
 
 def find_nonsingular(public, permuted_rm):
     rows = [permuted_rm.T.solve(row)[1] for row in iter(public)]
-    return matrix.from_vectors(rows)
+    return mx.from_vectors(rows)
 
 
-def find_permutation(gen, m):
+def find_permutation(matrix, m):
 
-    a = gen.T.solve(vector.from_support_supplement(2**m))[1]
+    a = matrix.T.solve(vector.from_support_supplement(2**m))[1]
     removing_num = a.support[0] if len(a.support) else 0
     logger.debug(f'removing {removing_num}...')
     a_rows = [a]
@@ -96,5 +96,5 @@ def find_permutation(gen, m):
         if i != removing_num:
             a_rows.append(a ^ vector.from_support(m + 1, [i]))
 
-    a_rows = (matrix.from_vectors(a_rows)*gen)[1:]
-    return matrix.permutation([row.value for row in a_rows.T])
+    a_rows = (mx.from_vectors(a_rows)*matrix)[1:]
+    return mx.permutation([row.value for row in a_rows.T])

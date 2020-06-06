@@ -45,7 +45,7 @@ class ChizhovBorodin(Attacker):
             r = self.m - 1 - r 
             rm = rm.orthogonal
 
-        d, rm = gcd_step(r, self.m, rm)
+        d, rm = gcd_step(rm, r, self.m)
         if d != 1:
             logger.info('performing Minder-Shokrollahi attack...')
             rm_minus_1 = MinderShokrollahi(d, self.m).attack(rm)
@@ -55,6 +55,8 @@ class ChizhovBorodin(Attacker):
 
         self.logger.debug("solving P and M matrices...")
         P = find_permutation(rm, self.m)
+        if is_dual_code:
+            r = self.m - 1 - r
 
         permuted_rm = rm_code.generator(r, self.m) * P
         M = find_nonsingular(self.public_key, permuted_rm)
