@@ -2,6 +2,8 @@ import logging
 from logging import config as lc
 import math
 
+from blincodes import matrix, vector
+
 
 logger = logging.getLogger('UT')
 lc.fileConfig(fname='logging.conf')
@@ -36,7 +38,7 @@ def xgcd(a, b):
     return a, prev_x, prev_y
 
 
-def dottify_key(gpub, x, y):
+def dottify(matrix, x, y):
 
     q = math.ceil((-y)/x)
     s = q*x + y
@@ -45,13 +47,13 @@ def dottify_key(gpub, x, y):
         return None
 
     if s:
-        rm_s = gpub
+        rm_s = matrix
         for i in range(s - 1):
-            rm_s = dot_product(rm_s, gpub)
+            rm_s = dot_product(rm_s, matrix)
 
-    rm_qr = gpub
+    rm_qr = matrix
     for i in range(q - 1):
-        rm_qr = dot_product(rm_qr, gpub)
+        rm_qr = dot_product(rm_qr, matrix)
 
     rm_qr = rm_qr.orthogonal
     rm_dm = rm_qr
@@ -61,26 +63,38 @@ def dottify_key(gpub, x, y):
     return dot_product(rm_dm, rm_s) if s else rm_dm
 
 
-def gcd_step(r, m, rm):
+def gcd_step(r, m, matrix):
 
     g, x, y = xgcd(m - 1, r)
     if x == 0 and y == 1:
-        return g, rm
+        return g, matrix
 
     elif x > 0 and y < 0:
-        return g, dottify_key(rm, x, y)
+        return g, dottify(matrix, x, y)
 
     elif x < 0 and y > 0:
-        return g, dottify_key(rm, 1 - x, -y).orthogonal
+        return g, dottify(matrix, 1 - x, -y).orthogonal
 
     else:
         logger.info(f'received invalid x-y pair: ({x}, {y})')
         return None
 
 
-def find_permutation(rm, m):
-    return
+def find_nonsingular(public, permuted_rm):
+    rows = [permuted_rm.T.solve(row)[1] for row in iter(public)]
+    return matrix.from_vectors(rows)
 
 
-def find_nonsingular(pubkey, rm):
-    return
+def find_permutation(gen, m):
+
+    a = gen.T.solve(vector.from_support_supplement(2**m))[1]
+    removing_num = a.support[0] if len(a.support) else 0
+    logger.debug(f'removing {removing_num}...')
+    a_rows = [a]
+
+    for i in range(m + 1):
+        if i != removing_num:
+            a_rows.append(a ^ vector.from_support(m + 1, [i]))
+
+    a_rows = (matrix.from_vectors(a_rows)*gen)[1:]
+    return matrix.permutation([row.value for row in a_rows.T])
