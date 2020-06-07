@@ -64,3 +64,7 @@ class ChizhovBorodin(Attacker):
         M = find_nonsingular(self.public_key, permuted_rm)
         
         return M, P
+
+    def check_attack(self, m_part, p_part):
+        return m_part * rm_code.generator(self.r, self.m) * p_part == \
+            self.public_key 
