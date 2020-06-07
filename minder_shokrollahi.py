@@ -2,7 +2,7 @@ import logging
 from logging import config as lc
 import math
 
-from blincodes import matrix
+from blincodes import matrix, vector
 from blincodes.codes import tools
 import networkx as nx
 from networkx.algorithms.approximation import clique
@@ -97,7 +97,8 @@ class MinderShokrollahi(Attacker):
 
                     word_num += 1
 
-        c = max({item for i in range(word_len) for j in range(i + 1, word_len)})
+        c = max({cij[i][j] for i in range(word_len)
+                           for j in range(i + 1, word_len)})
         logger.debug(f'threshold c is set to {c}')
 
         for i in range(word_len):

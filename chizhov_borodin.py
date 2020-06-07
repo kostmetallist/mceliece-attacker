@@ -6,6 +6,7 @@ from blincodes import matrix
 from blincodes.codes import rm as rm_code
 
 from attacker import Attacker
+from minder_shokrollahi import MinderShokrollahi
 from utils import dot_product, find_nonsingular, find_permutation, gcd_step
 
 
@@ -51,10 +52,10 @@ class ChizhovBorodin(Attacker):
             rm_minus_1 = MinderShokrollahi(d, self.m).attack(rm)
             rm = dot_product(rm.orthogonal, rm_minus_1).orthogonal
 
-        elif:
+        else:
             logger.info('skipping Minder-Shokrollahi step...')
 
-        self.logger.debug('solving P and M matrices...')
+        logger.debug('solving P and M matrices...')
         P = find_permutation(rm, self.m)
         if is_dual_code:
             r = self.m - 1 - r
