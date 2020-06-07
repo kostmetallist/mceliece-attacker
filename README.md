@@ -1,6 +1,6 @@
 # McEliece Cryptosystem Attacker
 
-## Descirption
+## Description
 
 This repo contains Chizhov-Borodin attack implementation on McEliece 
 cryptosystem based on Reed-Muller codes.
